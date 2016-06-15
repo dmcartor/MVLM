@@ -1,45 +1,45 @@
-#' Conduct multivariate multiple regression and MANOVA with exact p-values
+#' Conduct multivariate multiple regression and MANOVA with analytic p-values
 #'
 #' \code{mvlm} is used to fit linear models with a multivariate outcome. It uses
-#' the exact null distribution of the multivariate linear model test statistic
-#' to compute p-values (McArtor et al., submitted). It therefore alleviates the
-#' need to use approximate p-values based Wilks Lambda, Pillai's Trace, the
+#' the asymptotic  null distribution of the multivariate linear model test
+#' statistic to compute p-values (McArtor et al., 2016). It therefore alleviates
+#' the need to use approximate p-values based Wilks' Lambda, Pillai's Trace, the
 #' Hotelling-Lawley Trace, and Roy's Greatest Root.
-#' 
+#'
 #' Importantly, the outcome of \code{formula} must be a \code{matrix}, and the
 #' object passed to \code{data} must be a data frame containing all of the
 #' variables that are named as predictors in \code{formula}.
-#' 
-#' The conditional effects of variables of type \code{factor} or \code{ordered} 
+#'
+#' The conditional effects of variables of type \code{factor} or \code{ordered}
 #' in \code{data} are computed based on the type of contrasts specified by
-#' \code{contr.factor} and \code{contr.ordered}. If \code{data} contains an 
-#' (ordered or unordered) factor with \code{k} levels, a \code{k-1} degree of  
+#' \code{contr.factor} and \code{contr.ordered}. If \code{data} contains an
+#' (ordered or unordered) factor with \code{k} levels, a \code{k-1} degree of
 #' freedom test will be conducted corresponding to that factor and the specified
 #' contrast structure. If, instead, the user wants to assess \code{k-1} separate
-#' single DF tests that comprise this omnibus effect (similar to the approach 
-#' taken by \code{lm}), then the appropriate model matrix should be formed in 
-#' advance and passed to \code{mvlm} directly in the \code{data} parameter. See 
-#' the package vigentte for an example by calling 
+#' single DF tests that comprise this omnibus effect (similar to the approach
+#' taken by \code{lm}), then the appropriate model matrix should be formed in
+#' advance and passed to \code{mvlm} directly in the \code{data} parameter. See
+#' the package vigentte for an example by calling
 #' \code{vignette('mvlm-vignette')}.
 #'
 #' @param formula An object of class \code{formula} where the outcome (e.g. the
 #' Y in the following formula: Y ~ x1 + x2) is a \code{n x q matrix}, where
 #' \code{q} is the number of outcome variables being regressed onto the set
-#' of predictors included in the formula. 
+#' of predictors included in the formula.
 #' @param data Mandatory \code{data.frame} containing all of the predictors
-#' passed to \code{formula}. 
+#' passed to \code{formula}.
 #' @param start.acc Starting accuracy of the Davies (1980) algorithm
 #' implemented in the \code{\link{davies}} function in the \code{CompQuadForm}
 #' package (Duchesne &  De Micheaux, 2010) that \code{mvlm} uses to compute
 #' multivariate linear model p-values.
 #' @param n.cores Number of cores to use in parallelization through the
 #' \code{parallel} pacakge.
-#' @param contr.factor The type of contrasts used to test unordered categorical 
+#' @param contr.factor The type of contrasts used to test unordered categorical
 #' variables that have type \code{factor}. Must be a string taking one of the
 #' following values: \code{("contr.sum", "contr.treatment", "contr.helmert")}.
-#' @param contr.ordered The type of contrasts used to test ordered categorical 
+#' @param contr.ordered The type of contrasts used to test ordered categorical
 #' variables that have type \code{ordered}. Must be a string taking one of the
-#' following values: \code{("contr.poly", "contr.sum", "contr.treatment", 
+#' following values: \code{("contr.poly", "contr.sum", "contr.treatment",
 #' "contr.helmert")}.
 #'
 #' @return An object with nine elements and a summary function. Calling
@@ -63,7 +63,7 @@
 #' \item{beta.hat}{Estimated regression coefficients.}
 #' \item{adj.n}{Adjusted sample size used to determine whether or not the
 #' asmptotic properties of the model are likely to hold. See McArtor et al.
-#' (submitted) for more detail.}
+#' (2016) for more detail.}
 #' \item{data}{Original input data and the \code{model.matrix} used to fit the
 #' model.}
 #' \item{formula}{The formula passed to \code{mvlm}.}
@@ -86,7 +86,7 @@
 #'  approximation and exact methods. Computational Statistics and Data
 #'  Analysis, 54(4), 858-862.
 #'
-#'  McArtor, D.B., Lubke, G.H., & Bergeman, C. S. (submitted). The null distribution of the multivariate linear model test statistic.
+#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
 #'
 #' @examples
 #'data(mvlmdata)
@@ -104,14 +104,15 @@
 #' @importFrom CompQuadForm davies
 #' @importFrom parallel mclapply
 #' @export
-mvlm <- function(formula, data, 
-                start.acc = 1e-20,  n.cores = 1,
-                contr.factor = 'contr.sum',
-                contr.ordered = 'contr.poly'){
+mvlm <- function(formula, data,
+                 start.acc = 1e-20,  n.cores = 1,
+                 contr.factor = 'contr.sum',
+                 contr.ordered = 'contr.poly'){
+
   # ===========================================================================
   # Input management
   # ===========================================================================
-  
+
   # ----------------------------------------------------------------------------
   # Get the data
   # ----------------------------------------------------------------------------
@@ -122,7 +123,7 @@ mvlm <- function(formula, data,
   p <- ncol(X)
   q <- ncol(Y)
   rm(dat)
-  
+
   # ----------------------------------------------------------------------------
   # Handle missingness
   # ----------------------------------------------------------------------------
@@ -135,239 +136,228 @@ mvlm <- function(formula, data,
     Y.use <- Y.use[-which.na,]
     warning(paste(length(which.na), 'observations removed due to missingness.'))
   }
-  
+
   # Record sample size
   n <- nrow(X.use)
-  
-  
+
   # ----------------------------------------------------------------------------
   # Handle variable names
   # ----------------------------------------------------------------------------
-  
+
   # Get Y names
   ynames <- colnames(Y)
   if(all(is.null(colnames(Y)))){
     ynames <- paste0('Y', 1:q)
   }
-  
+
   # Get X names that were passed to mvlm()
   X <- as.data.frame(X)
   xnames <- names(X)
-  
+
   # Get the formula to expand using model.matrix()
   fmla <- paste(formula)
   fmla <- as.formula(paste('~', fmla[3]))
-  
+
   # ----------------------------------------------------------------------------
   # Handle potential contrast coding of factors
   # ----------------------------------------------------------------------------
-  
+
   contr.list <- lapply(1:p, FUN = function(k){
     # Default: no contrast for quantitaive predictor
     contr.type <- NULL
-    
+
     # Sum contrasts for unordered categorical predictor
     if(is.factor(X[,k])){
       contr.type <- contr.factor
     }
-    
+
     # Polynomial contrasts for ordered categorical predictor
     if(is.ordered(X[,k])){
       contr.type <- contr.ordered
     }
-    
+
     return(contr.type)
   })
-  
+
   names(contr.list) <- xnames
   contr.list <- contr.list[!unlist(lapply(contr.list, is.null))]
-  
+
   # ----------------------------------------------------------------------------
   # Get full design matrix
   # ----------------------------------------------------------------------------
   X.full <- stats::model.matrix(fmla, data = X.use, contrasts = contr.list)
   term.inds <- attr(X.full, 'assign')
-  term.names <-  c('(Intercept)', 
+  term.names <-  c('(Intercept)',
                    attr(terms(fmla, data = X.use), 'term.labels'))
-  
-  
+
   # Record number of predictor variables after contrast coding
   p <- ncol(X.full) - 1
   px <- length(term.names)
-  
-  
+
   # ===========================================================================
   # Get eigenvalues of SSCP and create function to get p-values
   # ===========================================================================
-  
+
   # The overall SSCP
   mean.Y <- matrix(apply(Y.use, 2, mean), nrow = n, ncol = q, byrow = T)
   sscp.Y <- crossprod(Y.use)
   sscp.mean.Y <- crossprod(mean.Y)
   sscp <- sscp.Y - sscp.mean.Y
-  
+
   # Eigenvalues
   lambda <- eigen(sscp, only.values = T)$values
-  
+
   # Compute adjusted sample size
   n.tilde <- (n-p-1) * lambda[1] / sum(lambda)
-  
+
   # Function to compute p-values
   pmvlm <- function(f, lambda, k, p, n,
-                   lim = 50000, acc = start.acc){
-    
+                    lim = 50000, acc = start.acc){
+
     # Remove df from test statistic
     f <- f/(n-p-1)*k
-    
+
     gamma <- c(lambda,  -f * lambda)
-    
+
     nu <- c(rep(k, length(lambda)), rep(n-p-1, length(lambda)))
-    
+
     # Call the Davies function at zero using the given weights and df, along
     # with the starting values of the metaparameters of the algorithm
     pv <- CompQuadForm::davies(0, lambda = gamma, h = nu, lim = lim, acc = acc)
-    
+
     # Check error status. If there was an error, return entire davies object
     if(pv$ifault != 0){
       #     warning('Error in davies() procedure, please check results.')
       return(pv)
     }
-    
+
     # If the p-value is below zero, interpret as an error and break
     if(pv$Qq < 0){
       #     warning('Error in davies() procedure, please check results.')
       return(pv)
     }
-    
+
     # If there was no error, return only the p-value
     if(pv$ifault == 0){
       return(pv$Qq)
     }
   }
-  
-  
+
   # ===========================================================================
   # Compute test statistics and r-squares
   # ===========================================================================
-  
+
   # Overall Hat matrix
   H <- tcrossprod(tcrossprod(
     X.full, solve(crossprod(X.full))), X.full)
-  
+
   # Error SSCP
   sscp.e <- crossprod(Y.use, diag(n) - H) %*% Y.use
-  
+
   # Denominator of each test statistic
   mse <- sum(diag(sscp.e)) / (n-p-1)
-  
+
   # --- Omnibus Test Statistic --- #
   sscp.r <- (crossprod(Y.use, H) %*% Y.use) - sscp.mean.Y
   f.omni <- (sum(diag(sscp.r)) / p) / mse
-  
+
   # --- Omnibus R-Square --- #
   rsq.omni <- sscp.r / sscp
   rsq.omni <- c('overall' = sum(diag(sscp.r))/sum(diag(sscp)), diag(rsq.omni))
-  
-  
+
   # --- Conditional test statistics and r-squares for each predictor --- #
   res.x <- matrix(
     unlist(
       parallel::mclapply(
         unique(term.inds), mc.cores = n.cores, FUN = function(tn){
-          
-          
+
           # Make adjusted design matrix
           pred.inds <- which(term.inds == tn)
           X.tmp <- X.full[,-pred.inds]
           k <- length(pred.inds)
-          
+
           # Hat matrix
           H1 <- tcrossprod(tcrossprod(X.tmp, solve(crossprod(X.tmp))), X.tmp)
-          
-          
-          
+
           # Compute test statistic
           sscp.r.tmp <- crossprod(Y.use, H - H1) %*% Y.use
           f.xx <- (sum(diag(sscp.r.tmp)) / k) / mse
-          
-          
+
           # Compute r-squares
           rsq.x <- sscp.r.tmp / sscp
-          rsq.x <- c('overall' = 
+          rsq.x <- c('overall' =
                        sum(diag(sscp.r.tmp))/sum(diag(sscp)), diag(rsq.x))
-          
+
           # Return output
           return(c('df' = k, 'f' = f.xx, rsq.x))
-          
+
         })), nrow = px, byrow = T)
   colnames(res.x) <- c('df', 'f', 'rsq', paste0('rsq', 1:q))
   df <- res.x[,1]
   f.x <- res.x[,2]
   rsq.x <- res.x[,-(1:2)]
-  
-  
+
   # ===========================================================================
   # Compute p-values
   # ===========================================================================
-  
+
   # --- Omnibus Test --- #
   acc.omni <- start.acc
   pv.omni <- pmvlm(f = f.omni, lambda = lambda, k = p, p = p, n = n,
-                  acc = acc.omni)
-  
+                   acc = acc.omni)
+
   # If the davies procedure threw an error, decrease the accuracy
   while(length(pv.omni) > 1){
     acc.omni <- acc.omni * 10
     pv.omni <- pmvlm(f = f.omni, lambda = lambda, k = p, p = p, n = n,
-                    acc = acc.omni)
+                     acc = acc.omni)
   }
-  
-  
+
   # --- Conditional tests --- #
   pv.x <- matrix(
     unlist(parallel::mclapply(1:px, mc.cores = n.cores, FUN = function(l){
-      
+
       ff <- f.x[l]
       dff <- df[l]
-      
+
       acc.x <- start.acc
       pv.x <- pmvlm(f = ff, lambda = lambda, k = dff, p = p, n = n, acc = acc.x)
-      
-      
+
       # If the davies procedure threw an error, decrease the accuracy
       while(length(pv.x) > 1){
         acc.x <- acc.x * 10
         pv.x <- pmvlm(f = ff, lambda = lambda, k = dff, p = p, n = n,
-                     acc = acc.x)
+                      acc = acc.x)
       }
-      
+
       return(c(pv.x, acc.x))
     })), ncol = 2, byrow = T)
-  
+
   acc.x <- pv.x[,2]
   pv.x <- pv.x[,1]
-  
+
   # ===========================================================================
   # Get estimated regression coefficients;
   # format test stats, p-values, p-value accuracy, and R-square for output
   # ===========================================================================
-  beta.hat <- as.matrix(coef(lm(formula, data = X, 
+
+  beta.hat <- as.matrix(coef(lm(formula, data = X,
                                 contrasts = contr.list)))
   colnames(beta.hat) <- ynames
-  
+
   stat <- c(f.omni, f.x)
   df <- c(p, df)
   pv <- c(pv.omni, pv.x)
   pv.acc <- c(acc.omni, acc.x)
   names(stat) <- names(pv) <- names(pv.acc) <- names(df) <-
     c('Omnibus Effect', term.names)
-  
+
   pseudo.rsq <- c(rsq.omni[1], rsq.x[-1,1])
   names(pseudo.rsq) <- c('Omnibus Effect', term.names[-1])
-  
+
   y.rsq <- rbind(rsq.omni[-1], rsq.x[-1,-1,drop=F])
   dimnames(y.rsq) <- list(c('Omnibus Effect', term.names[-1]),  c(ynames))
-  
+
   # ===========================================================================
   # Output results
   # ===========================================================================
@@ -381,19 +371,19 @@ mvlm <- function(formula, data,
               'adj.n' = n.tilde,
               'data' = list('X' = X, 'Y' = Y, model.matrix = X.full),
               'formula' = formula)
-  
+
   class(out) <- c('mvlm', class(out))
-  
+
   if(n.tilde < 75){
-    warning(paste0('Adjusted sample size = ', round(n.tilde), '\n',
-                   'Asymptotic properties of the null distribution may not hold.\n',
-                   'This can result in overly conservative p-values.\n',
-                   'Increased sample size is recommended.'))
+    warning(
+      paste0('Adjusted sample size = ', round(n.tilde), '\n',
+             'Asymptotic properties of the null distribution may not hold.\n',
+             'This can result in overly conservative p-values.\n',
+             'Increased sample size is recommended.'))
   }
-  
+
   return(out)
 }
-
 
 
 #' Print mvlm Object
@@ -421,7 +411,6 @@ print.mvlm <- function(x, ...){
   names(out) <- pv.name
   print(out)
 }
-
 
 
 #' Summarizing mvlm Results
@@ -452,9 +441,9 @@ print.mvlm <- function(x, ...){
 #' \item{beta.hat}{Estimated regression coefficients.}
 #' \item{adj.n}{Adjusted sample size used to determine whether or not the
 #' asmptotic properties of the model are likely to hold. See McArtor et al.
-#' (submitted) for more detail.}
-#' \item{data}{Original input data (if \code{keep.data = T} was passed to
-#' \code{mvlm}, otherwise, \code{NULL}).}
+#' (2016) for more detail.}
+#' \item{data}{Original input data and the \code{model.matrix} used to fit the
+#' model.}
 #'
 #' Note that the printed output of \code{summary(res)} will truncate p-values
 #' to the smallest trustworthy values, but the object returned by
@@ -474,7 +463,7 @@ print.mvlm <- function(x, ...){
 #'  approximation and exact methods. Computational Statistics and Data
 #'  Analysis, 54(4), 858-862.
 #'
-#'  McArtor, D.B., Lubke, G.H., & Bergeman, C. S. (submitted). The null distribution of the multivariate linear model test statistic.
+#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
 #'
 #' @examples
 #'data(mvlmdata)
@@ -482,7 +471,7 @@ print.mvlm <- function(x, ...){
 #'Y <- as.matrix(Y.mvlm)
 #'
 #'# Main effects model
-#'mvlm.res <- mvlm(Y ~ Cont.1 + Cont.2 + Cat, data = X.mvlm)
+#'mvlm.res <- mvlm(Y ~ Cont + Cat + Ord, data = X.mvlm)
 #'summary(mvlm.res)
 #'
 #'# Include two-way interactions
@@ -496,7 +485,7 @@ summary.mvlm <- function(object, ...){
   for(i in 1:length(pv.print)){
     pv.print[i] <- format.pval(pp[i], eps = object$p.prec[i,1])
   }
-  
+
   pr2.out <- c(object$pseudo.rsq[1], NA, object$pseudo.rsq[-1])
   print.res <- data.frame('Statistic' =
                             format(object$stat, digits = 3),
@@ -509,7 +498,7 @@ summary.mvlm <- function(object, ...){
                         'p-value' = object$pv)
   names(print.res) <- names(out.res) <- c('Statistic', 'Numer DF',
                                           'Pseudo R2', 'p-value')
-  
+
   # Clear effect size estimate for intercept
   print.res <- data.frame(print.res, NA)
   print.res <- as.data.frame(print.res)
@@ -517,8 +506,7 @@ summary.mvlm <- function(object, ...){
     print.res[,k] <- paste(print.res[,k])
   }
   print.res[2,3] <- ''
-  
-  
+
   # Add significance codes to p-values
   names(print.res)[5] <- ''
   for(l in 1:nrow(print.res)){
@@ -538,8 +526,7 @@ summary.mvlm <- function(object, ...){
       print.res[l,5] <- '***'
     }
   }
-  
-  
+
   print(print.res)
   cat('---', fill = T)
   cat("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1")
@@ -548,7 +535,7 @@ summary.mvlm <- function(object, ...){
 
 #' Extract mvlm Fitted Values
 #'
-#' \code{fitted} method for class \code{mvlm}. 
+#' \code{fitted} method for class \code{mvlm}.
 #'
 #' @param object Output from \code{mvlm}
 #' @param ... Further arguments passed to or from other methods.
@@ -561,7 +548,7 @@ summary.mvlm <- function(object, ...){
 #' @examples
 #'data(mvlmdata)
 #'Y <- as.matrix(Y.mvlm)
-#'mvlm.res <- mvlm(Y ~ Cont.1 + Cont.2 + Cat, data = X.mvlm)
+#'mvlm.res <- mvlm(Y ~ Cont + Cat + Ord, data = X.mvlm)
 #'Y.hat <- fitted(mvlm.res)
 #'
 #' @export
@@ -571,28 +558,29 @@ fitted.mvlm <- function(object, ...){
   MM <- object$data$model.matrix
   con.list <- attr(MM, 'contrasts')
   fmla <- paste(object$formula)
-  fmla <- as.formula(paste('~', fmla[3]))
-  
+  fmla <- stats::as.formula(paste('~', fmla[3]))
+
   BB <- object$beta.hat
-  
+
   # Don't let the missing observations be removed - keep NA's in the output
   na.x <- which(rowSums(is.na(XX)) > 0)
   # replace predicors with a placeholder - the predicted values will be NA'ed
   if(length(na.x) > 0){
     XX[na.x,] <- XX[(1:nrow(XX)[-na.x])[1],]
   }
-  
-  XX <- model.matrix(fmla, data = XX, contrasts.arg = con.list)
+
+  XX <- stats::model.matrix(fmla, data = XX, contrasts.arg = con.list)
   Y.hat <- XX %*% BB
-  
+
   # Maually recode the entries that should be NA
   if(length(na.x) > 0){
     Y.hat[na.x,] <- NA
   }
-  
+
   # Return
   return(Y.hat)
 }
+
 
 #' Extract mvlm Residuals
 #'
@@ -609,7 +597,7 @@ fitted.mvlm <- function(object, ...){
 #' @examples
 #'data(mvlmdata)
 #'Y <- as.matrix(Y.mvlm)
-#'mvlm.res <- mvlm(Y ~ Cont.1 + Cont.2 + Cat, data = X.mvlm)
+#'mvlm.res <- mvlm(Y ~ Cont + Cat + Ord, data = X.mvlm)
 #'Y.resid <- resid(mvlm.res)
 #'
 #' @export
@@ -620,25 +608,25 @@ residuals.mvlm <- function(object, ...){
   con.list <- attr(MM, 'contrasts')
   fmla <- paste(object$formula)
   fmla <- as.formula(paste('~', fmla[3]))
-  
+
   BB <- object$beta.hat
-  
+
   # Don't let the missing observations be removed - keep NA's in the output
   na.x <- which(rowSums(is.na(XX)) > 0)
   # replace predicors with a placeholder - the predicted values will be NA'ed
   if(length(na.x) > 0){
     XX[na.x,] <- XX[(1:nrow(XX)[-na.x])[1],]
   }
-  
+
   XX <- model.matrix(fmla, data = XX, contrasts.arg = con.list)
   Y.hat <- XX %*% BB
-  
+
   # Maually recode the entries that should be NA
   if(length(na.x) > 0){
     Y.hat[na.x,] <- NA
   }
   Y.resid <- YY - Y.hat
-  
+
   # Return
   return(Y.resid)
 }
@@ -662,51 +650,51 @@ residuals.mvlm <- function(object, ...){
 #'
 #' @examples
 #'data(mvlmdata)
-#'Y.train <- as.matrix(Y.mvlm[1:100,])
-#'X.train <- X.mvlm[1:100,]
+#'Y.train <- as.matrix(Y.mvlm[1:150,])
+#'X.train <- X.mvlm[1:150,]
 #'
 #'mvlm.res <- mvlm(Y.train ~ ., data = X.train)
 #'
-#'#'X.test <- X.mvlm[101:200,]
+#'X.test <- X.mvlm[151:200,]
 #'Y.predict <- predict(mvlm.res, newdata = X.test)
 #'
 #' @export
 predict.mvlm <- function(object, newdata, ...){
   fmla <- paste(object$formula)
   fmla <- as.formula(paste('~', fmla[3]))
-  
+
   XX <- data.frame(newdata)
   MM <- object$data$model.matrix
   con.list <- attr(MM, 'contrasts')
   BB <- object$beta.hat
-  
+
   # Use the original variable names
   ynames <- colnames(object$data$Y)
   xnames <- names(object$data$X)
-  
+
   # Here I can make sure the names on newdata match the names on X
   if(any(xnames != names(XX))){
     stop('The variables comprising newdata must be the same as the predictors
                passed to the origial call to mvlm().')
   }
-  
-  
-  
+
+
+
   # Don't let the missing observations be removed - keep NA's in the output
   na.x <- which(rowSums(is.na(XX)) > 0)
   if(length(na.x) > 0){
     XX[na.x,] <- XX[(1:nrow(XX)[-na.x])[1],]
   }
-  
+
   XX <- model.matrix(fmla, data = XX, contrasts.arg = con.list)
   Y.hat <- XX %*% BB
   colnames(Y.hat) <- ynames
-  
+
   # Maually recode the entries that should be NA
   if(length(na.x) > 0){
     Y.hat[na.x,] <- NA
   }
-  
+
   return(Y.hat)
 }
 
@@ -715,7 +703,6 @@ predict.mvlm <- function(object, newdata, ...){
 #'
 #' See package vignette by calling \code{vignette('mvlm-vignette')}.
 "X.mvlm"
-
 
 
 #' Simulated outcome data to illustrate the mvlm package.

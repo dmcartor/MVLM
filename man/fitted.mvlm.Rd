@@ -21,7 +21,7 @@ data passed to \code{mvlm}
 \examples{
 data(mvlmdata)
 Y <- as.matrix(Y.mvlm)
-mvlm.res <- mvlm(Y ~ Cont.1 + Cont.2 + Cat, data = X.mvlm)
+mvlm.res <- mvlm(Y ~ Cont + Cat + Ord, data = X.mvlm)
 Y.hat <- fitted(mvlm.res)
 
 }
