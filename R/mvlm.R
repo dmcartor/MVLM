@@ -3,11 +3,7 @@
 #' \code{mvlm} is used to fit linear models with a multivariate outcome. It uses
 #' the asymptotic  null distribution of the multivariate linear model test
 #' statistic to compute p-values (McArtor et al., 2016). It therefore alleviates
-<<<<<<< HEAD
 #' the need to use approximate p-values based Wilks' Lambda, Pillai's Trace, the
-=======
-#' the need to use approximate p-values based Wilks Lambda, Pillai's Trace, the
->>>>>>> e7d80a62a9df80fc35120e1ee85514ba195ec65f
 #' Hotelling-Lawley Trace, and Roy's Greatest Root.
 #'
 #' Importantly, the outcome of \code{formula} must be a \code{matrix}, and the
@@ -562,11 +558,7 @@ fitted.mvlm <- function(object, ...){
   MM <- object$data$model.matrix
   con.list <- attr(MM, 'contrasts')
   fmla <- paste(object$formula)
-<<<<<<< HEAD
   fmla <- stats::as.formula(paste('~', fmla[3]))
-=======
-  fmla <- as.formula(paste('~', fmla[3]))
->>>>>>> e7d80a62a9df80fc35120e1ee85514ba195ec65f
 
   BB <- object$beta.hat
 
@@ -577,11 +569,7 @@ fitted.mvlm <- function(object, ...){
     XX[na.x,] <- XX[(1:nrow(XX)[-na.x])[1],]
   }
 
-<<<<<<< HEAD
   XX <- stats::model.matrix(fmla, data = XX, contrasts.arg = con.list)
-=======
-  XX <- model.matrix(fmla, data = XX, contrasts.arg = con.list)
->>>>>>> e7d80a62a9df80fc35120e1ee85514ba195ec65f
   Y.hat <- XX %*% BB
 
   # Maually recode the entries that should be NA

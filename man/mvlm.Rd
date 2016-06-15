@@ -71,11 +71,7 @@ that can be drawn with certainty is that the p-value is smaller than (or
 \code{mvlm} is used to fit linear models with a multivariate outcome. It uses
 the asymptotic  null distribution of the multivariate linear model test
 statistic to compute p-values (McArtor et al., 2016). It therefore alleviates
-<<<<<<< HEAD
 the need to use approximate p-values based Wilks' Lambda, Pillai's Trace, the
-=======
-the need to use approximate p-values based Wilks Lambda, Pillai's Trace, the
->>>>>>> e7d80a62a9df80fc35120e1ee85514ba195ec65f
 Hotelling-Lawley Trace, and Roy's Greatest Root.
 }
 \details{
