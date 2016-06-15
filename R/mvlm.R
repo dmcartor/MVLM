@@ -109,16 +109,16 @@ mvlm <- function(formula, data,
                  contr.factor = 'contr.sum',
                  contr.ordered = 'contr.poly'){
 
-  # ===========================================================================
+  # ============================================================================
   # Input management
-  # ===========================================================================
+  # ============================================================================
 
   # ----------------------------------------------------------------------------
   # Get the data
   # ----------------------------------------------------------------------------
   X <- data
   rm(data)
-  dat <- model.frame(formula, data = X, na.action = NULL)
+  dat <- stats::model.frame(formula, data = X, na.action = NULL)
   Y <- as.matrix(dat[1])
   p <- ncol(X)
   q <- ncol(Y)
@@ -154,9 +154,9 @@ mvlm <- function(formula, data,
   X <- as.data.frame(X)
   xnames <- names(X)
 
-  # Get the formula to expand using model.matrix()
+  # Get the formula to expand using stats::model.matrix()
   fmla <- paste(formula)
-  fmla <- as.formula(paste('~', fmla[3]))
+  fmla <- stats::as.formula(paste('~', fmla[3]))
 
   # ----------------------------------------------------------------------------
   # Handle potential contrast coding of factors
@@ -188,15 +188,15 @@ mvlm <- function(formula, data,
   X.full <- stats::model.matrix(fmla, data = X.use, contrasts = contr.list)
   term.inds <- attr(X.full, 'assign')
   term.names <-  c('(Intercept)',
-                   attr(terms(fmla, data = X.use), 'term.labels'))
+                   attr(stats::terms(fmla, data = X.use), 'term.labels'))
 
   # Record number of predictor variables after contrast coding
   p <- ncol(X.full) - 1
   px <- length(term.names)
 
-  # ===========================================================================
+  # ============================================================================
   # Get eigenvalues of SSCP and create function to get p-values
-  # ===========================================================================
+  # ============================================================================
 
   # The overall SSCP
   mean.Y <- matrix(apply(Y.use, 2, mean), nrow = n, ncol = q, byrow = T)
@@ -243,9 +243,9 @@ mvlm <- function(formula, data,
     }
   }
 
-  # ===========================================================================
+  # ============================================================================
   # Compute test statistics and r-squares
-  # ===========================================================================
+  # ============================================================================
 
   # Overall Hat matrix
   H <- tcrossprod(tcrossprod(
@@ -297,9 +297,9 @@ mvlm <- function(formula, data,
   f.x <- res.x[,2]
   rsq.x <- res.x[,-(1:2)]
 
-  # ===========================================================================
+  # ============================================================================
   # Compute p-values
-  # ===========================================================================
+  # ============================================================================
 
   # --- Omnibus Test --- #
   acc.omni <- start.acc
@@ -336,12 +336,12 @@ mvlm <- function(formula, data,
   acc.x <- pv.x[,2]
   pv.x <- pv.x[,1]
 
-  # ===========================================================================
+  # ============================================================================
   # Get estimated regression coefficients;
   # format test stats, p-values, p-value accuracy, and R-square for output
-  # ===========================================================================
+  # ============================================================================
 
-  beta.hat <- as.matrix(coef(lm(formula, data = X,
+  beta.hat <- as.matrix(stats::coef(stats::lm(formula, data = X,
                                 contrasts = contr.list)))
   colnames(beta.hat) <- ynames
 
@@ -358,9 +358,9 @@ mvlm <- function(formula, data,
   y.rsq <- rbind(rsq.omni[-1], rsq.x[-1,-1,drop=F])
   dimnames(y.rsq) <- list(c('Omnibus Effect', term.names[-1]),  c(ynames))
 
-  # ===========================================================================
+  # ============================================================================
   # Output results
-  # ===========================================================================
+  # ============================================================================
   out <- list('stat' = as.matrix(stat),
               'df' = as.matrix(df),
               'pv' = as.matrix(pv),
@@ -607,7 +607,7 @@ residuals.mvlm <- function(object, ...){
   MM <- object$data$model.matrix
   con.list <- attr(MM, 'contrasts')
   fmla <- paste(object$formula)
-  fmla <- as.formula(paste('~', fmla[3]))
+  fmla <- stats::as.formula(paste('~', fmla[3]))
 
   BB <- object$beta.hat
 
@@ -618,7 +618,7 @@ residuals.mvlm <- function(object, ...){
     XX[na.x,] <- XX[(1:nrow(XX)[-na.x])[1],]
   }
 
-  XX <- model.matrix(fmla, data = XX, contrasts.arg = con.list)
+  XX <- stats::model.matrix(fmla, data = XX, contrasts.arg = con.list)
   Y.hat <- XX %*% BB
 
   # Maually recode the entries that should be NA
@@ -661,7 +661,7 @@ residuals.mvlm <- function(object, ...){
 #' @export
 predict.mvlm <- function(object, newdata, ...){
   fmla <- paste(object$formula)
-  fmla <- as.formula(paste('~', fmla[3]))
+  fmla <- stats::as.formula(paste('~', fmla[3]))
 
   XX <- data.frame(newdata)
   MM <- object$data$model.matrix
@@ -686,7 +686,7 @@ predict.mvlm <- function(object, newdata, ...){
     XX[na.x,] <- XX[(1:nrow(XX)[-na.x])[1],]
   }
 
-  XX <- model.matrix(fmla, data = XX, contrasts.arg = con.list)
+  XX <- stats::model.matrix(fmla, data = XX, contrasts.arg = con.list)
   Y.hat <- XX %*% BB
   colnames(Y.hat) <- ynames
 
