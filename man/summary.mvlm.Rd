@@ -33,9 +33,9 @@ effect of each predictor.}
 \item{beta.hat}{Estimated regression coefficients.}
 \item{adj.n}{Adjusted sample size used to determine whether or not the
 asmptotic properties of the model are likely to hold. See McArtor et al.
-(submitted) for more detail.}
-\item{data}{Original input data (if \code{keep.data = T} was passed to
-\code{mvlm}, otherwise, \code{NULL}).}
+(2016) for more detail.}
+\item{data}{Original input data and the \code{model.matrix} used to fit the
+model.}
 
 Note that the printed output of \code{summary(res)} will truncate p-values
 to the smallest trustworthy values, but the object returned by
@@ -53,7 +53,7 @@ data(mvlmdata)
 Y <- as.matrix(Y.mvlm)
 
 # Main effects model
-mvlm.res <- mvlm(Y ~ Cont.1 + Cont.2 + Cat, data = X.mvlm)
+mvlm.res <- mvlm(Y ~ Cont + Cat + Ord, data = X.mvlm)
 summary(mvlm.res)
 
 # Include two-way interactions
@@ -74,6 +74,6 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of
  approximation and exact methods. Computational Statistics and Data
  Analysis, 54(4), 858-862.
 
- McArtor, D.B., Lubke, G.H., & Bergeman, C. S. (submitted). The null distribution of the multivariate linear model test statistic.
+ McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
 }
 

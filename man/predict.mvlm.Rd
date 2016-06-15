@@ -25,12 +25,12 @@ must match the names of the original data.
 }
 \examples{
 data(mvlmdata)
-Y.train <- as.matrix(Y.mvlm[1:100,])
-X.train <- X.mvlm[1:100,]
+Y.train <- as.matrix(Y.mvlm[1:150,])
+X.train <- X.mvlm[1:150,]
 
 mvlm.res <- mvlm(Y.train ~ ., data = X.train)
 
-#'X.test <- X.mvlm[101:200,]
+X.test <- X.mvlm[151:200,]
 Y.predict <- predict(mvlm.res, newdata = X.test)
 
 }

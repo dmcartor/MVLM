@@ -2,7 +2,7 @@
 % Please edit documentation in R/mvlm.R
 \name{mvlm}
 \alias{mvlm}
-\title{Conduct multivariate multiple regression and MANOVA with exact p-values}
+\title{Conduct multivariate multiple regression and MANOVA with analytic p-values}
 \usage{
 mvlm(formula, data, start.acc = 1e-20, n.cores = 1,
   contr.factor = "contr.sum", contr.ordered = "contr.poly")
@@ -24,13 +24,13 @@ multivariate linear model p-values.}
 \item{n.cores}{Number of cores to use in parallelization through the
 \code{parallel} pacakge.}
 
-\item{contr.factor}{The type of contrasts used to test unordered categorical 
+\item{contr.factor}{The type of contrasts used to test unordered categorical
 variables that have type \code{factor}. Must be a string taking one of the
 following values: \code{("contr.sum", "contr.treatment", "contr.helmert")}.}
 
-\item{contr.ordered}{The type of contrasts used to test ordered categorical 
+\item{contr.ordered}{The type of contrasts used to test ordered categorical
 variables that have type \code{ordered}. Must be a string taking one of the
-following values: \code{("contr.poly", "contr.sum", "contr.treatment", 
+following values: \code{("contr.poly", "contr.sum", "contr.treatment",
 "contr.helmert")}.}
 }
 \value{
@@ -55,7 +55,7 @@ effect of each predictor.}
 \item{beta.hat}{Estimated regression coefficients.}
 \item{adj.n}{Adjusted sample size used to determine whether or not the
 asmptotic properties of the model are likely to hold. See McArtor et al.
-(submitted) for more detail.}
+(2016) for more detail.}
 \item{data}{Original input data and the \code{model.matrix} used to fit the
 model.}
 \item{formula}{The formula passed to \code{mvlm}.}
@@ -69,9 +69,9 @@ that can be drawn with certainty is that the p-value is smaller than (or
 }
 \description{
 \code{mvlm} is used to fit linear models with a multivariate outcome. It uses
-the exact null distribution of the multivariate linear model test statistic
-to compute p-values (McArtor et al., submitted). It therefore alleviates the
-need to use approximate p-values based Wilks Lambda, Pillai's Trace, the
+the asymptotic  null distribution of the multivariate linear model test
+statistic to compute p-values (McArtor et al., 2016). It therefore alleviates
+the need to use approximate p-values based Wilks Lambda, Pillai's Trace, the
 Hotelling-Lawley Trace, and Roy's Greatest Root.
 }
 \details{
@@ -79,16 +79,16 @@ Importantly, the outcome of \code{formula} must be a \code{matrix}, and the
 object passed to \code{data} must be a data frame containing all of the
 variables that are named as predictors in \code{formula}.
 
-The conditional effects of variables of type \code{factor} or \code{ordered} 
+The conditional effects of variables of type \code{factor} or \code{ordered}
 in \code{data} are computed based on the type of contrasts specified by
-\code{contr.factor} and \code{contr.ordered}. If \code{data} contains an 
-(ordered or unordered) factor with \code{k} levels, a \code{k-1} degree of  
+\code{contr.factor} and \code{contr.ordered}. If \code{data} contains an
+(ordered or unordered) factor with \code{k} levels, a \code{k-1} degree of
 freedom test will be conducted corresponding to that factor and the specified
 contrast structure. If, instead, the user wants to assess \code{k-1} separate
-single DF tests that comprise this omnibus effect (similar to the approach 
-taken by \code{lm}), then the appropriate model matrix should be formed in 
-advance and passed to \code{mvlm} directly in the \code{data} parameter. See 
-the package vigentte for an example by calling 
+single DF tests that comprise this omnibus effect (similar to the approach
+taken by \code{lm}), then the appropriate model matrix should be formed in
+advance and passed to \code{mvlm} directly in the \code{data} parameter. See
+the package vigentte for an example by calling
 \code{vignette('mvlm-vignette')}.
 }
 \examples{
@@ -118,6 +118,6 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of
  approximation and exact methods. Computational Statistics and Data
  Analysis, 54(4), 858-862.
 
- McArtor, D.B., Lubke, G.H., & Bergeman, C. S. (submitted). The null distribution of the multivariate linear model test statistic.
+ McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
 }
 
