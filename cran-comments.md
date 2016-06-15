@@ -6,13 +6,9 @@
 ## R CMD check results
 There were no ERRORs or WARNINGs.
 
-There were 2 NOTEs:
+There was 1 NOTE:
 
 * New submission
-  
-* checking top-level files ... NOTE
-Non-standard file/directory found at top level:
-  'cran-comments.md'
 
 ## Downstream dependencies
 No other packages depend on MVLM
