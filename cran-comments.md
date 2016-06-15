@@ -15,4 +15,4 @@ Non-standard file/directory found at top level:
   'cran-comments.md'
 
 ## Downstream dependencies
-No other packages depend on MMR
+No other packages depend on MVLM
