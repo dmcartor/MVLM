@@ -4,7 +4,7 @@ Fit linear models with multivariate outcomes (i.e., MANOVA and multivariate mult
 The most recent version can be installed from github using the devtools package:
 
     devtools::install_github("dmcartor/mvlm", build_vignettes = TRUE)
-    library(MDMR)
+    library(MVLM)
 
 ## Usage
 
