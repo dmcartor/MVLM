@@ -33,7 +33,7 @@ effect of each predictor.}
 \item{beta.hat}{Estimated regression coefficients.}
 \item{adj.n}{Adjusted sample size used to determine whether or not the
 asmptotic properties of the model are likely to hold. See McArtor et al.
-(2016) for more detail.}
+(under review) for more detail.}
 \item{data}{Original input data and the \code{model.matrix} used to fit the
 model.}
 
@@ -74,6 +74,8 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of
  approximation and exact methods. Computational Statistics and Data
  Analysis, 54(4), 858-862.
 
- McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
+ McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
+ distribution of the multivariate linear model test statistic. Manuscript
+ submitted for publication.
 }
 

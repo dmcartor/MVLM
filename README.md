@@ -5,6 +5,12 @@ The most recent version can be installed from github using the devtools package:
 
     devtools::install_github("dmcartor/mvlm", build_vignettes = TRUE)
     library(MVLM)
+    
+or directly from CRAN:
+
+    install.packages(MVLM)
+    library(MVLM)
+
 
 ## Usage
 
