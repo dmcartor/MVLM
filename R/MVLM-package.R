@@ -2,9 +2,10 @@
 #'
 #' The \code{MVLM} package is used to fit linear models with a multivariate
 #' outcome. It utilizes the asymptotic null distribution of the multivariate
-#' linear model test statistic to compute p-values (McArtor et al., 2016). It
-#' therefore alleviates the need to use approximate p-values based Wilks Lambda,
-#' Pillai's Trace, the Hotelling-Lawley Trace, and Roy's Greatest Root.
+#' linear model test statistic to compute p-values (McArtor et al., under
+#' review). It therefore alleviates the need to use approximate p-values based
+#' Wilks Lambda, Pillai's Trace, the Hotelling-Lawley Trace, and Roy's Greatest
+#' Root.
 #'
 #' @section Usage:
 #' To access this package's tutorial, type the following line into the console:
@@ -28,7 +29,9 @@
 #'  approximation and exact methods. Computational Statistics and Data
 #'  Analysis, 54(4), 858-862.
 #'
-#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
+#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
+#'  distribution of the multivariate linear model test statistic. Manuscript
+#'  submitted for publication.
 #'
 #' @examples
 #'data(mvlmdata)

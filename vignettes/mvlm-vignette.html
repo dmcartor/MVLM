@@ -12,7 +12,7 @@
 
 <meta name="author" content="Daniel McArtor" />
 
-<meta name="date" content="2016-06-15" />
+<meta name="date" content="2016-08-05" />
 
 <title>Using the MVLM Package</title>
 
@@ -70,13 +70,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Using the MVLM Package</h1>
 <h4 class="author"><em>Daniel McArtor</em></h4>
-<h4 class="date"><em>2016-06-15</em></h4>
+<h4 class="date"><em>2016-08-05</em></h4>
 
 
 
 <p>Many research questions involve the collection of multivariate outcome data. A common goal in these scenarios is the identification of predictors <span class="math inline">\(\left(\mathbf{X}_{n \times p}\right)\)</span> that are associated with the multivariate outcome <span class="math inline">\(\left(\mathbf{Y}_{n \times q}\right)\)</span>. Methods such as multivariate multiple regression (MMR) and multivariate analysis of variance (MANOVA) are typical approaches to accomplishing this goal.</p>
-<p>These methods have been used in conjunction with approximate p-values because until recently, the null distribution of the multivariate generalization of the linear model test statistic has been unknown. This package allows users to conduct MMR and MANOVA in conjunction with the the analytic p-values proposed by McArtor, Lubke, &amp; Bergeman (2016), alleviating the field’s reliance on approximate significance tests.</p>
-<p>The remainder of this vignette is designed to illustrate the use of the <em>MVLM</em> package, which is straight-forward to use. For further technical details of the methods being implemented, please refer to McArtor &amp; Lubke (submitted).</p>
+<p>These methods have been used in conjunction with approximate p-values because until recently, the null distribution of the multivariate generalization of the linear model test statistic has been unknown. This package allows users to conduct MMR and MANOVA in conjunction with the the analytic p-values proposed by McArtor, Lubke, &amp; Bergeman (under review), alleviating the field’s reliance on approximate significance tests.</p>
+<p>The remainder of this vignette is designed to illustrate the use of the <em>MVLM</em> package, which is straight-forward to use. For further technical details of the methods being implemented, please refer to McArtor et al. (under review).</p>
 <div id="fitting-the-model" class="section level2">
 <h2>1. Fitting the Model</h2>
 <p>To illustrate this package, we include the toy dataset <em>mvlmdata</em>, which is comprised of five continuous outcome variables <span class="math inline">\(\mathbf{Y}\)</span> and three predictors <span class="math inline">\(\mathbf{X}\)</span> measured on 200 subjects. All outcome variables are standardized to have unit variance.</p>
@@ -215,7 +215,7 @@ for(k in <span class="dv">1</span>:<span class="dv">5</span>){
 <h2>3. References</h2>
 <p>Davies, R. B. (1980). The Distribution of a Linear Combination of chi-square Random Variables. <em>Journal of the Royal Statistical Society. Series C (Applied Statistics), 29</em>(3), 323–333.</p>
 <p>Duchesne, P., &amp; De Micheaux, P.L. (2010). Computing the distribution of quadratic forms: Further comparisons between the Liu-Tang-Zhang approximation and exact methods. <em>Computational Statistics and Data Analysis, 54</em>(4), 858–862.</p>
-<p>McArtor, D. B., Lubke, G. H., &amp; Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.</p>
+<p>McArtor, D. B., Lubke, G. H., &amp; Bergeman, C. S. (under review). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.</p>
 </div>
 
 

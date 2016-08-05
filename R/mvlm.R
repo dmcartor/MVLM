@@ -2,9 +2,9 @@
 #'
 #' \code{mvlm} is used to fit linear models with a multivariate outcome. It uses
 #' the asymptotic  null distribution of the multivariate linear model test
-#' statistic to compute p-values (McArtor et al., 2016). It therefore alleviates
-#' the need to use approximate p-values based Wilks' Lambda, Pillai's Trace, the
-#' Hotelling-Lawley Trace, and Roy's Greatest Root.
+#' statistic to compute p-values (McArtor et al., under review). It therefore
+#' alleviates the need to use approximate p-values based Wilks' Lambda, Pillai's
+#' Trace, the Hotelling-Lawley Trace, and Roy's Greatest Root.
 #'
 #' Importantly, the outcome of \code{formula} must be a \code{matrix}, and the
 #' object passed to \code{data} must be a data frame containing all of the
@@ -63,7 +63,7 @@
 #' \item{beta.hat}{Estimated regression coefficients.}
 #' \item{adj.n}{Adjusted sample size used to determine whether or not the
 #' asmptotic properties of the model are likely to hold. See McArtor et al.
-#' (2016) for more detail.}
+#' (under review) for more detail.}
 #' \item{data}{Original input data and the \code{model.matrix} used to fit the
 #' model.}
 #' \item{formula}{The formula passed to \code{mvlm}.}
@@ -86,7 +86,9 @@
 #'  approximation and exact methods. Computational Statistics and Data
 #'  Analysis, 54(4), 858-862.
 #'
-#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
+#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
+#'  distribution of the multivariate linear model test statistic. Manuscript
+#'  submitted for publication.
 #'
 #' @examples
 #'data(mvlmdata)
@@ -441,7 +443,7 @@ print.mvlm <- function(x, ...){
 #' \item{beta.hat}{Estimated regression coefficients.}
 #' \item{adj.n}{Adjusted sample size used to determine whether or not the
 #' asmptotic properties of the model are likely to hold. See McArtor et al.
-#' (2016) for more detail.}
+#' (under review) for more detail.}
 #' \item{data}{Original input data and the \code{model.matrix} used to fit the
 #' model.}
 #'
@@ -463,7 +465,9 @@ print.mvlm <- function(x, ...){
 #'  approximation and exact methods. Computational Statistics and Data
 #'  Analysis, 54(4), 858-862.
 #'
-#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
+#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
+#'  distribution of the multivariate linear model test statistic. Manuscript
+#'  submitted for publication.
 #'
 #' @examples
 #'data(mvlmdata)

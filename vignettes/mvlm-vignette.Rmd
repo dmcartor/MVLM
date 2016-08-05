@@ -11,9 +11,9 @@ vignette: >
 
 Many research questions involve the collection of multivariate outcome data. A common goal in these scenarios is the identification of predictors $\left(\mathbf{X}_{n \times p}\right)$ that are associated with the multivariate outcome $\left(\mathbf{Y}_{n \times q}\right)$. Methods such as multivariate multiple regression (MMR) and multivariate analysis of variance (MANOVA) are typical approaches to accomplishing this goal.
 
-These methods have been used in conjunction with approximate p-values because until recently, the null distribution of the multivariate generalization of the linear model test statistic has been unknown. This package allows users to conduct MMR and MANOVA in conjunction with the the analytic p-values proposed by McArtor, Lubke, & Bergeman (2016), alleviating the field's reliance on approximate significance tests.
+These methods have been used in conjunction with approximate p-values because until recently, the null distribution of the multivariate generalization of the linear model test statistic has been unknown. This package allows users to conduct MMR and MANOVA in conjunction with the the analytic p-values proposed by McArtor, Lubke, & Bergeman (under review), alleviating the field's reliance on approximate significance tests.
 
-The remainder of this vignette is designed to illustrate the use of the *MVLM* package, which is straight-forward to use. For further technical details of the methods being implemented, please refer to McArtor & Lubke (submitted).
+The remainder of this vignette is designed to illustrate the use of the *MVLM* package, which is straight-forward to use. For further technical details of the methods being implemented, please refer to McArtor et al. (under review).
 
 ## 1. Fitting the Model
 To illustrate this package, we include the toy dataset *mvlmdata*, which is comprised of five continuous outcome variables $\mathbf{Y}$ and three predictors $\mathbf{X}$ measured on 200 subjects. All outcome variables are standardized to have unit variance.
@@ -103,4 +103,4 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of chi-square Ran
 
 Duchesne, P., & De Micheaux, P.L. (2010). Computing the distribution of quadratic forms: Further comparisons between the Liu-Tang-Zhang approximation and exact methods. *Computational Statistics and Data Analysis, 54*(4), 858–862.
 
-McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (2016). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
+McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
