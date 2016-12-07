@@ -28,12 +28,12 @@
 #' of predictors included in the formula.
 #' @param data Mandatory \code{data.frame} containing all of the predictors
 #' passed to \code{formula}.
+#' @param n.cores Number of cores to use in parallelization through the
+#' \code{parallel} pacakge.
 #' @param start.acc Starting accuracy of the Davies (1980) algorithm
 #' implemented in the \code{\link{davies}} function in the \code{CompQuadForm}
 #' package (Duchesne &  De Micheaux, 2010) that \code{mvlm} uses to compute
 #' multivariate linear model p-values.
-#' @param n.cores Number of cores to use in parallelization through the
-#' \code{parallel} pacakge.
 #' @param contr.factor The type of contrasts used to test unordered categorical
 #' variables that have type \code{factor}. Must be a string taking one of the
 #' following values: \code{("contr.sum", "contr.treatment", "contr.helmert")}.
@@ -86,9 +86,9 @@
 #'  approximation and exact methods. Computational Statistics and Data
 #'  Analysis, 54(4), 858-862.
 #'
-#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
-#'  distribution of the multivariate linear model test statistic. Manuscript
-#'  submitted for publication.
+#'  McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S.
+#'  (under review). The asymptotic null distribution of the multivariate linear
+#'  model test statistic. Manuscript submitted for publication.
 #'
 #' @examples
 #'data(mvlmdata)
@@ -107,7 +107,8 @@
 #' @importFrom parallel mclapply
 #' @export
 mvlm <- function(formula, data,
-                 start.acc = 1e-20,  n.cores = 1,
+                 n.cores = 1,
+                 start.acc = 1e-20,
                  contr.factor = 'contr.sum',
                  contr.ordered = 'contr.poly'){
 
@@ -184,9 +185,9 @@ mvlm <- function(formula, data,
   names(contr.list) <- xnames
   contr.list <- contr.list[!unlist(lapply(contr.list, is.null))]
 
-  # ----------------------------------------------------------------------------
+  # ============================================================================
   # Get full design matrix
-  # ----------------------------------------------------------------------------
+  # ============================================================================
   X.full <- stats::model.matrix(fmla, data = X.use, contrasts = contr.list)
   term.inds <- attr(X.full, 'assign')
   term.names <-  c('(Intercept)',
@@ -195,6 +196,10 @@ mvlm <- function(formula, data,
   # Record number of predictor variables after contrast coding
   p <- ncol(X.full) - 1
   px <- length(term.names)
+
+  # Full hat matrix
+  H <- tcrossprod(tcrossprod(X.full, solve(crossprod(X.full))), X.full)
+
 
   # ============================================================================
   # Get eigenvalues of SSCP and create function to get p-values
@@ -212,7 +217,10 @@ mvlm <- function(formula, data,
   # Compute adjusted sample size
   n.tilde <- (n-p-1) * lambda[1] / sum(lambda)
 
+
+  # ============================================================================
   # Function to compute p-values
+  # ============================================================================
   pmvlm <- function(f, lambda, k, p, n,
                     lim = 50000, acc = start.acc){
 
@@ -248,10 +256,6 @@ mvlm <- function(formula, data,
   # ============================================================================
   # Compute test statistics and r-squares
   # ============================================================================
-
-  # Overall Hat matrix
-  H <- tcrossprod(tcrossprod(
-    X.full, solve(crossprod(X.full))), X.full)
 
   # Error SSCP
   sscp.e <- crossprod(Y.use, diag(n) - H) %*% Y.use
@@ -323,7 +327,8 @@ mvlm <- function(formula, data,
       dff <- df[l]
 
       acc.x <- start.acc
-      pv.x <- pmvlm(f = ff, lambda = lambda, k = dff, p = p, n = n, acc = acc.x)
+      pv.x <- pmvlm(f = ff, lambda = lambda,
+                    k = dff, p = p, n = n, acc = acc.x)
 
       # If the davies procedure threw an error, decrease the accuracy
       while(length(pv.x) > 1){
@@ -344,7 +349,7 @@ mvlm <- function(formula, data,
   # ============================================================================
 
   beta.hat <- as.matrix(stats::coef(stats::lm(formula, data = X,
-                                contrasts = contr.list)))
+                                              contrasts = contr.list)))
   colnames(beta.hat) <- ynames
 
   stat <- c(f.omni, f.x)
@@ -376,9 +381,9 @@ mvlm <- function(formula, data,
 
   class(out) <- c('mvlm', class(out))
 
-  if(n.tilde < 75){
+  if(any(n.tilde < 75)){
     warning(
-      paste0('Adjusted sample size = ', round(n.tilde), '\n',
+      paste0('Minimum adjusted sample size = ', round(min(n.tilde)), '\n',
              'Asymptotic properties of the null distribution may not hold.\n',
              'This can result in overly conservative p-values.\n',
              'Increased sample size is recommended.'))

@@ -4,7 +4,7 @@
 \alias{mvlm}
 \title{Conduct multivariate multiple regression and MANOVA with analytic p-values}
 \usage{
-mvlm(formula, data, start.acc = 1e-20, n.cores = 1,
+mvlm(formula, data, n.cores = 1, start.acc = 1e-20,
   contr.factor = "contr.sum", contr.ordered = "contr.poly")
 }
 \arguments{
@@ -16,13 +16,13 @@ of predictors included in the formula.}
 \item{data}{Mandatory \code{data.frame} containing all of the predictors
 passed to \code{formula}.}
 
+\item{n.cores}{Number of cores to use in parallelization through the
+\code{parallel} pacakge.}
+
 \item{start.acc}{Starting accuracy of the Davies (1980) algorithm
 implemented in the \code{\link{davies}} function in the \code{CompQuadForm}
 package (Duchesne &  De Micheaux, 2010) that \code{mvlm} uses to compute
 multivariate linear model p-values.}
-
-\item{n.cores}{Number of cores to use in parallelization through the
-\code{parallel} pacakge.}
 
 \item{contr.factor}{The type of contrasts used to test unordered categorical
 variables that have type \code{factor}. Must be a string taking one of the
@@ -118,8 +118,8 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of
  approximation and exact methods. Computational Statistics and Data
  Analysis, 54(4), 858-862.
 
- McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
- distribution of the multivariate linear model test statistic. Manuscript
- submitted for publication.
+ McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S.
+ (under review). The asymptotic null distribution of the multivariate linear
+ model test statistic. Manuscript submitted for publication.
 }
 

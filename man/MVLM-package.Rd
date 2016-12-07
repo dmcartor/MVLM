@@ -44,8 +44,8 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of
  approximation and exact methods. Computational Statistics and Data
  Analysis, 54(4), 858-862.
 
- McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
- distribution of the multivariate linear model test statistic. Manuscript
- submitted for publication.
+ McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S.
+ (under review). The asymptotic null distribution of the multivariate linear
+ model test statistic. Manuscript submitted for publication.
 }
 
