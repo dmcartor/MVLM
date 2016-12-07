@@ -28,12 +28,16 @@
 #' of predictors included in the formula.
 #' @param data Mandatory \code{data.frame} containing all of the predictors
 #' passed to \code{formula}.
+#' @param n.cores Number of cores to use in parallelization through the
+#' \code{parallel} pacakge.
+#' @param lambda.resid Temporary parameter dictating whether the eigenvalues
+#' used to establish p-values are based on the marginal outcome or the residuals
+#' corresponding to each null hypothesis. Defaults to T, indicating that the
+#' new approach (residuals) will be used.
 #' @param start.acc Starting accuracy of the Davies (1980) algorithm
 #' implemented in the \code{\link{davies}} function in the \code{CompQuadForm}
 #' package (Duchesne &  De Micheaux, 2010) that \code{mvlm} uses to compute
 #' multivariate linear model p-values.
-#' @param n.cores Number of cores to use in parallelization through the
-#' \code{parallel} pacakge.
 #' @param contr.factor The type of contrasts used to test unordered categorical
 #' variables that have type \code{factor}. Must be a string taking one of the
 #' following values: \code{("contr.sum", "contr.treatment", "contr.helmert")}.
@@ -107,7 +111,9 @@
 #' @importFrom parallel mclapply
 #' @export
 mvlm <- function(formula, data,
-                 start.acc = 1e-20,  n.cores = 1,
+                 n.cores = 1,
+                 lambda.resid = T,
+                 start.acc = 1e-20,
                  contr.factor = 'contr.sum',
                  contr.ordered = 'contr.poly'){
 
@@ -196,6 +202,9 @@ mvlm <- function(formula, data,
   p <- ncol(X.full) - 1
   px <- length(term.names)
 
+  # Full hat matrix
+  H <- tcrossprod(tcrossprod(X.full, solve(crossprod(X.full))), X.full)
+
   # ============================================================================
   # Get eigenvalues of SSCP and create function to get p-values
   # ============================================================================
@@ -206,13 +215,57 @@ mvlm <- function(formula, data,
   sscp.mean.Y <- crossprod(mean.Y)
   sscp <- sscp.Y - sscp.mean.Y
 
-  # Eigenvalues
-  lambda <- eigen(sscp, only.values = T)$values
+  # ----------------------------------------------------------------------------
+  # Eigenvalues (original approach)
+  # ----------------------------------------------------------------------------
+  if(lambda.resid == F){
 
-  # Compute adjusted sample size
-  n.tilde <- (n-p-1) * lambda[1] / sum(lambda)
+    # Omnibus eigenvalues and per-x are the same because they're just based on
+    # Y'Y
+    lambda.omni <- eigen(sscp, only.values = T)$values
+    lambda.x <- lapply(0:(px-1), FUN = function(k){lambda.omni})
+  }
 
+  # ----------------------------------------------------------------------------
+  # Eigenvalues (updated approach)
+  # ----------------------------------------------------------------------------
+  if(lambda.resid == T){
+
+    # Omnibus lambda
+    lambda.omni <-
+      eigen(crossprod(resid(lm(Y~X.full-1))), only.values = T)$values
+
+    # Lambda for each X
+    # Iterate over each predictor and get residuals under H0: B_{p} | B_{-p} = 0
+    lambda.x <- lapply(0:(px-1), FUN = function(k){
+      # Hat matrix without the given predictor
+      X.hold <- X.full[,term.inds != k]
+      H.hold <-
+        tcrossprod(tcrossprod(X.hold,
+                              solve(crossprod(X.hold))), X.hold)
+      # Fitted values and residuals under the null hypothesis
+      Yhat.hold <- (H - H.hold) %*% Y
+      Resid.hold <- Y - Yhat.hold
+
+      # Eigenvalues of residual covariance matrix
+      eigen(crossprod(Resid.hold), only.values = T)$values
+    })
+  }
+
+  # ----------------------------------------------------------------------------
+  # Compute adjusted sample sizes
+  # ----------------------------------------------------------------------------
+  n.tilde.omni <- (n-p-1) * lambda.omni[1] / sum(lambda.omni)
+  n.tilde.x <- unlist(lapply(0:(px-1), FUN = function(k){
+    (n-sum(term.inds == k)-1) * lambda.x[[k+1]][1] / sum(lambda.x[[k+1]])
+  }))
+  n.tilde <- c(n.tilde.omni, n.tilde.x)
+  names(n.tilde) <- c('Omnibus Effect', term.names)
+
+
+  # ----------------------------------------------------------------------------
   # Function to compute p-values
+  # ----------------------------------------------------------------------------
   pmvlm <- function(f, lambda, k, p, n,
                     lim = 50000, acc = start.acc){
 
@@ -248,10 +301,6 @@ mvlm <- function(formula, data,
   # ============================================================================
   # Compute test statistics and r-squares
   # ============================================================================
-
-  # Overall Hat matrix
-  H <- tcrossprod(tcrossprod(
-    X.full, solve(crossprod(X.full))), X.full)
 
   # Error SSCP
   sscp.e <- crossprod(Y.use, diag(n) - H) %*% Y.use
@@ -305,13 +354,13 @@ mvlm <- function(formula, data,
 
   # --- Omnibus Test --- #
   acc.omni <- start.acc
-  pv.omni <- pmvlm(f = f.omni, lambda = lambda, k = p, p = p, n = n,
+  pv.omni <- pmvlm(f = f.omni, lambda = lambda.omni, k = p, p = p, n = n,
                    acc = acc.omni)
 
   # If the davies procedure threw an error, decrease the accuracy
   while(length(pv.omni) > 1){
     acc.omni <- acc.omni * 10
-    pv.omni <- pmvlm(f = f.omni, lambda = lambda, k = p, p = p, n = n,
+    pv.omni <- pmvlm(f = f.omni, lambda = lambda.omni, k = p, p = p, n = n,
                      acc = acc.omni)
   }
 
@@ -323,12 +372,13 @@ mvlm <- function(formula, data,
       dff <- df[l]
 
       acc.x <- start.acc
-      pv.x <- pmvlm(f = ff, lambda = lambda, k = dff, p = p, n = n, acc = acc.x)
+      pv.x <- pmvlm(f = ff, lambda = lambda.x[[l]],
+                    k = dff, p = p, n = n, acc = acc.x)
 
       # If the davies procedure threw an error, decrease the accuracy
       while(length(pv.x) > 1){
         acc.x <- acc.x * 10
-        pv.x <- pmvlm(f = ff, lambda = lambda, k = dff, p = p, n = n,
+        pv.x <- pmvlm(f = ff, lambda = lambda.x[[l]], k = dff, p = p, n = n,
                       acc = acc.x)
       }
 
@@ -344,7 +394,7 @@ mvlm <- function(formula, data,
   # ============================================================================
 
   beta.hat <- as.matrix(stats::coef(stats::lm(formula, data = X,
-                                contrasts = contr.list)))
+                                              contrasts = contr.list)))
   colnames(beta.hat) <- ynames
 
   stat <- c(f.omni, f.x)
@@ -376,9 +426,9 @@ mvlm <- function(formula, data,
 
   class(out) <- c('mvlm', class(out))
 
-  if(n.tilde < 75){
+  if(any(n.tilde < 75)){
     warning(
-      paste0('Adjusted sample size = ', round(n.tilde), '\n',
+      paste0('Minimum adjusted sample size = ', round(min(n.tilde)), '\n',
              'Asymptotic properties of the null distribution may not hold.\n',
              'This can result in overly conservative p-values.\n',
              'Increased sample size is recommended.'))

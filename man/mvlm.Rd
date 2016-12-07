@@ -4,7 +4,7 @@
 \alias{mvlm}
 \title{Conduct multivariate multiple regression and MANOVA with analytic p-values}
 \usage{
-mvlm(formula, data, start.acc = 1e-20, n.cores = 1,
+mvlm(formula, data, n.cores = 1, lambda.resid = T, start.acc = 1e-20,
   contr.factor = "contr.sum", contr.ordered = "contr.poly")
 }
 \arguments{
@@ -16,13 +16,18 @@ of predictors included in the formula.}
 \item{data}{Mandatory \code{data.frame} containing all of the predictors
 passed to \code{formula}.}
 
+\item{n.cores}{Number of cores to use in parallelization through the
+\code{parallel} pacakge.}
+
+\item{lambda.resid}{Temporary parameter dictating whether the eigenvalues
+used to establish p-values are based on the marginal outcome or the residuals
+corresponding to each null hypothesis. Defaults to T, indicating that the
+new approach (residuals) will be used.}
+
 \item{start.acc}{Starting accuracy of the Davies (1980) algorithm
 implemented in the \code{\link{davies}} function in the \code{CompQuadForm}
 package (Duchesne &  De Micheaux, 2010) that \code{mvlm} uses to compute
 multivariate linear model p-values.}
-
-\item{n.cores}{Number of cores to use in parallelization through the
-\code{parallel} pacakge.}
 
 \item{contr.factor}{The type of contrasts used to test unordered categorical
 variables that have type \code{factor}. Must be a string taking one of the
