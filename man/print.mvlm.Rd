@@ -5,19 +5,31 @@
 \title{Print mvlm Object}
 \usage{
 \method{print}{mvlm}(x, ...)
+
+\method{print}{mvlm}(x, ...)
 }
 \arguments{
+\item{x}{Output from \code{mvlm}}
+
+\item{...}{Further arguments passed to or from other methods.}
+
 \item{x}{Output from \code{mvlm}}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
 \item{p-value}{Analytical p-values for the omnibus test and each predictor}
+
+\item{p-value}{Analytical p-values for the omnibus test and each predictor}
 }
 \description{
 \code{print} method for class \code{mvlm}
+
+\code{print} method for class \code{mvlm}
 }
 \author{
+Daniel B. McArtor (dmcartor@nd.edu) [aut, cre]
+
 Daniel B. McArtor (dmcartor@nd.edu) [aut, cre]
 }
 

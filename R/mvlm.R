@@ -185,9 +185,9 @@ mvlm <- function(formula, data,
   names(contr.list) <- xnames
   contr.list <- contr.list[!unlist(lapply(contr.list, is.null))]
 
-  # ============================================================================
+  # ----------------------------------------------------------------------------
   # Get full design matrix
-  # ============================================================================
+  # ----------------------------------------------------------------------------
   X.full <- stats::model.matrix(fmla, data = X.use, contrasts = contr.list)
   term.inds <- attr(X.full, 'assign')
   term.names <-  c('(Intercept)',
@@ -196,10 +196,6 @@ mvlm <- function(formula, data,
   # Record number of predictor variables after contrast coding
   p <- ncol(X.full) - 1
   px <- length(term.names)
-
-  # Full hat matrix
-  H <- tcrossprod(tcrossprod(X.full, solve(crossprod(X.full))), X.full)
-
 
   # ============================================================================
   # Get eigenvalues of SSCP and create function to get p-values
@@ -217,10 +213,7 @@ mvlm <- function(formula, data,
   # Compute adjusted sample size
   n.tilde <- (n-p-1) * lambda[1] / sum(lambda)
 
-
-  # ============================================================================
   # Function to compute p-values
-  # ============================================================================
   pmvlm <- function(f, lambda, k, p, n,
                     lim = 50000, acc = start.acc){
 
@@ -256,6 +249,10 @@ mvlm <- function(formula, data,
   # ============================================================================
   # Compute test statistics and r-squares
   # ============================================================================
+
+  # Overall Hat matrix
+  H <- tcrossprod(tcrossprod(
+    X.full, solve(crossprod(X.full))), X.full)
 
   # Error SSCP
   sscp.e <- crossprod(Y.use, diag(n) - H) %*% Y.use
@@ -327,8 +324,7 @@ mvlm <- function(formula, data,
       dff <- df[l]
 
       acc.x <- start.acc
-      pv.x <- pmvlm(f = ff, lambda = lambda,
-                    k = dff, p = p, n = n, acc = acc.x)
+      pv.x <- pmvlm(f = ff, lambda = lambda, k = dff, p = p, n = n, acc = acc.x)
 
       # If the davies procedure threw an error, decrease the accuracy
       while(length(pv.x) > 1){
@@ -381,15 +377,42 @@ mvlm <- function(formula, data,
 
   class(out) <- c('mvlm', class(out))
 
-  if(any(n.tilde < 75)){
+  if(n.tilde < 75){
     warning(
-      paste0('Minimum adjusted sample size = ', round(min(n.tilde)), '\n',
+      paste0('Adjusted sample size = ', round(n.tilde), '\n',
              'Asymptotic properties of the null distribution may not hold.\n',
              'This can result in overly conservative p-values.\n',
              'Increased sample size is recommended.'))
   }
 
   return(out)
+}
+
+
+#' Print mvlm Object
+#'
+#' \code{print} method for class \code{mvlm}
+#'
+#' @param x Output from \code{mvlm}
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @return
+#' \item{p-value}{Analytical p-values for the omnibus test and each predictor}
+#'
+#' @author Daniel B. McArtor (dmcartor@nd.edu) [aut, cre]
+#'
+#'
+#' @export
+print.mvlm <- function(x, ...){
+  pv.name <- 'p-value'
+  # If it's analytic, we can only say it's below davies error
+  out <- rep(NA, nrow(x$pv))
+  for(i in 1:length(out)){
+    out[i] <- format.pval(x$pv[i,1], eps = x$p.prec[i,1])
+  }
+  out <- data.frame(out,row.names = rownames(x$pv))
+  names(out) <- pv.name
+  print(out)
 }
 
 
