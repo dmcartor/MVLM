@@ -69,7 +69,7 @@ that can be drawn with certainty is that the p-value is smaller than (or
 }
 \description{
 \code{mvlm} is used to fit linear models with a multivariate outcome. It uses
-the asymptotic  null distribution of the multivariate linear model test
+the asymptotic null distribution of the multivariate linear model test
 statistic to compute p-values (McArtor et al., under review). It therefore
 alleviates the need to use approximate p-values based Wilks' Lambda, Pillai's
 Trace, the Hotelling-Lawley Trace, and Roy's Greatest Root.
@@ -119,7 +119,7 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of
  Analysis, 54(4), 858-862.
 
  McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S.
- (under review). The asymptotic null distribution of the multivariate linear
- model test statistic. Manuscript submitted for publication.
+ (under review). A new approach to conducting linear model hypothesis tests
+ with a multivariate outcome.
 }
 

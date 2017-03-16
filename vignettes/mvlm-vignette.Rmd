@@ -11,7 +11,7 @@ vignette: >
 
 Many research questions involve the collection of multivariate outcome data. A common goal in these scenarios is the identification of predictors $\left(\mathbf{X}_{n \times p}\right)$ that are associated with the multivariate outcome $\left(\mathbf{Y}_{n \times q}\right)$. Methods such as multivariate multiple regression (MMR) and multivariate analysis of variance (MANOVA) are typical approaches to accomplishing this goal.
 
-These methods have been used in conjunction with approximate p-values because until recently, the null distribution of the multivariate generalization of the linear model test statistic has been unknown. This package allows users to conduct MMR and MANOVA in conjunction with the the analytic p-values proposed by McArtor, Lubke, & Bergeman (under review), alleviating the field's reliance on approximate significance tests.
+This package allows users to conduct MMR and MANOVA in conjunction with the the analytic p-values proposed by McArtor, Lubke, & Bergeman (under review), in lieu of classical $p$-values based on statistics such as Wilks' Lambda and Pillai's Trace.
 
 The remainder of this vignette is designed to illustrate the use of the *MVLM* package, which is straight-forward to use. For further technical details of the methods being implemented, please refer to McArtor et al. (under review).
 
@@ -103,4 +103,4 @@ Davies, R. B. (1980). The Distribution of a Linear Combination of chi-square Ran
 
 Duchesne, P., & De Micheaux, P.L. (2010). Computing the distribution of quadratic forms: Further comparisons between the Liu-Tang-Zhang approximation and exact methods. *Computational Statistics and Data Analysis, 54*(4), 858–862.
 
-McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S. (under review). The asymptotic null distribution of the multivariate linear model test statistic. Manuscript submitted for publication.
+McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S. (submitted). A new approach to conducting linear model hypothesis tests with a multivariate outcome.

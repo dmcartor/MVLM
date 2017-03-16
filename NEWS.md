@@ -1,3 +1,7 @@
+# MVLM 0.1.4
+
+* Updated references to reflect changes to the submitted manuscript detailing this method
+
 # MVLM 0.1.3
 
 * Resolved the question in the previous version. The original approach was correct.
