@@ -1,7 +1,7 @@
 #' Conduct multivariate multiple regression and MANOVA with analytic p-values
 #'
 #' \code{mvlm} is used to fit linear models with a multivariate outcome. It uses
-#' the asymptotic  null distribution of the multivariate linear model test
+#' the asymptotic null distribution of the multivariate linear model test
 #' statistic to compute p-values (McArtor et al., under review). It therefore
 #' alleviates the need to use approximate p-values based Wilks' Lambda, Pillai's
 #' Trace, the Hotelling-Lawley Trace, and Roy's Greatest Root.
@@ -87,8 +87,8 @@
 #'  Analysis, 54(4), 858-862.
 #'
 #'  McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S.
-#'  (under review). The asymptotic null distribution of the multivariate linear
-#'  model test statistic. Manuscript submitted for publication.
+#'  (under review). A new approach to conducting linear model hypothesis tests
+#'  with a multivariate outcome.
 #'
 #' @examples
 #'data(mvlmdata)
@@ -493,9 +493,9 @@ print.mvlm <- function(x, ...){
 #'  approximation and exact methods. Computational Statistics and Data
 #'  Analysis, 54(4), 858-862.
 #'
-#'  McArtor, D. B., Lubke, G. H., & Bergeman, C. S. (under review). The null
-#'  distribution of the multivariate linear model test statistic. Manuscript
-#'  submitted for publication.
+#'  McArtor, D. B., Grasman, R. P. P. P., Lubke, G. H., & Bergeman, C. S.
+#'  (under review). A new approach to conducting linear model hypothesis tests
+#'  with a multivariate outcome.
 #'
 #' @examples
 #'data(mvlmdata)
