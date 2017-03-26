@@ -416,33 +416,6 @@ print.mvlm <- function(x, ...){
 }
 
 
-#' Print mvlm Object
-#'
-#' \code{print} method for class \code{mvlm}
-#'
-#' @param x Output from \code{mvlm}
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @return
-#' \item{p-value}{Analytical p-values for the omnibus test and each predictor}
-#'
-#' @author Daniel B. McArtor (dmcartor@nd.edu) [aut, cre]
-#'
-#'
-#' @export
-print.mvlm <- function(x, ...){
-  pv.name <- 'p-value'
-  # If it's analytic, we can only say it's below davies error
-  out <- rep(NA, nrow(x$pv))
-  for(i in 1:length(out)){
-    out[i] <- format.pval(x$pv[i,1], eps = x$p.prec[i,1])
-  }
-  out <- data.frame(out,row.names = rownames(x$pv))
-  names(out) <- pv.name
-  print(out)
-}
-
-
 #' Summarizing mvlm Results
 #'
 #' \code{summary} method for class \code{mvlm}
@@ -513,33 +486,51 @@ print.mvlm <- function(x, ...){
 #' @export
 summary.mvlm <- function(object, ...){
   pp <- unlist(object$pv)
-  pv.print <- rep(NA, length(pp))
-  for(i in 1:length(pv.print)){
-    pv.print[i] <- format.pval(pp[i], eps = object$p.prec[i,1])
-  }
 
   pr2.out <- c(object$pseudo.rsq[1], NA, object$pseudo.rsq[-1])
-  print.res <- data.frame('Statistic' =
-                            format(object$stat, digits = 3),
-                          'Numer DF' = object$df,
-                          'Pseudo R2' = format.pval(pr2.out, digits = 3),
-                          'p-value' = pv.print)
-  out.res <- data.frame('Statistic' = object$stat,
-                        'Numer DF' = object$df,
-                        'Pseudo R2' = pr2.out,
-                        'p-value' = object$pv)
-  names(print.res) <- names(out.res) <- c('Statistic', 'Numer DF',
-                                          'Pseudo R2', 'p-value')
+  out.res <- list('statistic' = object$stat,
+                  'numerDF' = object$df,
+                  'pseudoR2' = pr2.out,
+                  'pvalues' = object$pv,
+                  'p.prec' = object$p.prec)
+  class(out.res) <- 'summary.mvlm'
+  return(out.res)
+}
 
-  # Clear effect size estimate for intercept
-  print.res <- data.frame(print.res, NA)
-  print.res <- as.data.frame(print.res)
-  for(k in 1:5){
-    print.res[,k] <- paste(print.res[,k])
+#' @export
+print.summary.mvlm <- function(x, ...){
+
+  print.res <- data.frame('Statistic' = x$statistic,
+                          'Numer DF' = x$numerDF,
+                          'Pseudo R-Square' = x$pseudoR2,
+                          'p-value' = x$pvalues)
+
+  # Format p-values for printing
+  pp <- x$pvalues
+  pv.print <- rep(NA, length(pp))
+  for(i in 1:length(pv.print)){
+    pv.print[i] <- format.pval(pp[i], eps = x$p.prec[i,1])
   }
+  print.res[,4] <- pv.print
+
+  # Format significant digits on R-Square and test statistic
+  print.res[,1] <- format(print.res[,1],
+                          trim = T,
+                          digits = 4,
+                          justify = 'right',
+                          width = 10)
+
+  print.res[,3] <- format(print.res[,3],
+                          trim = T,
+                          digits = 4,
+                          justify = 'right',
+                          width = 10)
+
+  # Clear effect size from intercept
   print.res[2,3] <- ''
 
   # Add significance codes to p-values
+  print.res <- data.frame(print.res, NA)
   names(print.res)[5] <- ''
   for(l in 1:nrow(print.res)){
     if(pp[l] > 0.1){
@@ -562,7 +553,7 @@ summary.mvlm <- function(object, ...){
   print(print.res)
   cat('---', fill = T)
   cat("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1")
-  invisible(out.res)
+
 }
 
 #' Extract mvlm Fitted Values

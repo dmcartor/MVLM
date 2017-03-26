@@ -1,6 +1,7 @@
 # MVLM 0.1.4
 
 * Updated references to reflect changes to the submitted manuscript detailing this method
+* Updated print method for summary.mvlm
 
 # MVLM 0.1.3
 

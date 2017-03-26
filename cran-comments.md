@@ -2,6 +2,7 @@
 Updating MVLM package. Changes:
 
 * Updated documentation to reflect changes in the manuscript detailing the method implemented in this package
+* Updated print method for summary.mvlm
 
 ## Test environments
 * local OS X install, R 3.3.0
